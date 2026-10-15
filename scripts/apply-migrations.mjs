@@ -37,6 +37,9 @@ try {
   await client.connect()
 
   // 与 supabase CLI 保持同名同结构，方便以后无缝切回去
+  // supabase CLI 会自动创建 supabase_migrations schema，这里手动补上，
+  // 否则全新项目首次运行会报 schema does not exist
+  await client.query('CREATE SCHEMA IF NOT EXISTS supabase_migrations')
   await client.query(`
     CREATE TABLE IF NOT EXISTS supabase_migrations.schema_migrations (
       version    text PRIMARY KEY,
