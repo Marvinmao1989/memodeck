@@ -1,6 +1,6 @@
 use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
-use tauri::{AppHandle, Emitter, Manager, Runtime};
+use tauri::{AppHandle, Emitter, Manager};
 
 use crate::window::{self, FLOATING, MAIN};
 
@@ -9,7 +9,7 @@ use crate::window::{self, FLOATING, MAIN};
 /// 托盘图标承担三件事：显示/隐藏悬浮窗、快速新建、以及**鼠标穿透模式下
 /// 唯一的退出入口**（PRD R11 —— 穿透打开后窗口完全不响应鼠标，
 /// 如果托盘图标也用同一套置顶逻辑，用户就再也关不掉了）。
-pub fn build_tray<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
+pub fn build_tray(app: &AppHandle) -> tauri::Result<()> {
     let show = MenuItem::with_id(app, "show", "显示 / 隐藏悬浮窗", true, None::<&str>)?;
     let expand = MenuItem::with_id(app, "expand", "打开主窗口", true, None::<&str>)?;
     let sync = MenuItem::with_id(app, "sync", "立即同步", true, None::<&str>)?;

@@ -102,7 +102,9 @@ pub fn load_db(data_dir: tauri::State<'_, DataDir>) -> Result<Option<Vec<u8>>, S
     if !path.exists() {
         return Ok(None);
     }
-    fs::read(&path).map_err(|e| format!("读取数据库失败 ({}): {e}", path.display()))
+    fs::read(&path)
+        .map(Some)
+        .map_err(|e| format!("读取数据库失败 ({}): {e}", path.display()))
 }
 
 /// 写数据库。
