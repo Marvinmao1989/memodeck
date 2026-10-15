@@ -1,0 +1,20 @@
+node_modules/
+dist/
+dist-tauri/
+src-tauri/target/
+*.local
+.DS_Store
+.vite/
+
+# 本地数据目录（绿色版运行时生成）
+data/
+*.db
+*.db-journal
+*.db-wal
+
+# 沙箱环境的 npm 缓存（不属于项目）
+.home/
+
+# 平台注入的目录，不属于项目源码
+.plugin-cache/
+.skills/

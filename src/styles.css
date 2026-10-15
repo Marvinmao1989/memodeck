@@ -1,0 +1,174 @@
+@import 'tailwindcss';
+
+/*
+ * 设计基线：Windows 11 Fluent（PRD F9）。
+ * 颜色尽量取系统语义色，深浅色主题自动切换；
+ * 只有"待办等级"是我们自己的语义，定义成 token 供组件引用。
+ */
+
+@theme {
+  /* 等级色 —— 浅色主题（深色主题在 .dark 下覆盖） */
+  --color-prio-0: #8a8886;
+  --color-prio-1: #0f6cbd;
+  --color-prio-2: #c76e00;
+  --color-prio-3: #d13438;
+
+  /* 间距刻度：4 / 8 / 12 / 16 / 24 */
+  --spacing: 4px;
+
+  --radius-card: 8px;
+  --radius-window: 12px;
+  --radius-field: 6px;
+
+  --shadow-float: 0 8px 24px rgb(0 0 0 / 0.12);
+}
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+
+    /* 跟系统走 */
+    --surface: color-mix(in srgb, Canvas 92%, transparent);
+    --surface-raised: color-mix(in srgb, Canvas 96%, transparent);
+    --border: color-mix(in srgb, CanvasText 12%, transparent);
+    --text-primary: CanvasText;
+    --text-secondary: color-mix(in srgb, CanvasText 62%, transparent);
+    --text-tertiary: color-mix(in srgb, CanvasText 42%, transparent);
+    --accent: Highlight;
+    --accent-text: HighlightText;
+    --hover: color-mix(in srgb, CanvasText 6%, transparent);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --color-prio-1: #60cdff;
+      --color-prio-2: #fce100;
+      --color-prio-3: #ff99a4;
+    }
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+    margin: 0;
+  }
+
+  body {
+    font-family:
+      'Segoe UI Variable Text',
+      'Segoe UI',
+      'Microsoft YaHei',
+      'PingFang SC',
+      system-ui,
+      sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--text-primary);
+    background: transparent;
+    /* 悬浮窗上不应该出现文字光标 */
+    user-select: none;
+    -webkit-user-select: none;
+    overflow: hidden;
+  }
+
+  /* 输入区域可以正常选中文本 */
+  input,
+  textarea,
+  [contenteditable],
+  .selectable {
+    user-select: text;
+    -webkit-user-select: text;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, Highlight 30%, transparent);
+  }
+}
+
+@layer components {
+  .surface-window {
+    background: var(--surface);
+    backdrop-filter: blur(24px) saturate(140%);
+  }
+
+  .surface-card {
+    background: var(--surface-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+  }
+
+  /* 悬浮窗整体：圆角 + 阴影。Tauri 的无边框窗口没有原生阴影，
+     这里用 box-shadow 补上，同时配合 Windows 11 的原生圆角。 */
+  .float-window {
+    border-radius: var(--radius-window);
+    box-shadow: var(--shadow-float);
+    overflow: hidden;
+  }
+
+  .icon-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--radius-field);
+    color: var(--text-secondary);
+    transition: background-color 120ms ease-out;
+  }
+
+  .icon-button:hover {
+    background: var(--hover);
+    color: var(--text-primary);
+  }
+
+  .icon-button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  .field {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-field);
+    padding: 6px 10px;
+    color: var(--text-primary);
+    transition: border-color 120ms ease-out;
+  }
+
+  .field:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .field::placeholder {
+    color: var(--text-tertiary);
+  }
+}
+
+/* 只动 opacity 和 transform，避免触发重排（PRD F9.8） */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation: fade-in-up 160ms ease-out;
+}
+
+/* 尊重系统的"减少动态效果"设置 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

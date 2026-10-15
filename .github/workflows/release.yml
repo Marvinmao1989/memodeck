@@ -1,0 +1,78 @@
+name: Release
+
+# 绿色版的分发链路（PRD §5.5）：
+#   push tag → CI 构建单个 exe → 传到 GitHub Releases → 用户下载即用
+#
+# 不产出安装器，不签名。Windows 首次运行会弹 SmartScreen，
+# 用户点"更多信息 → 仍要运行"即可 —— 对自己和朋友用完全够，
+# 省下每年数千元的代码签名证书费用。
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows-latest
+            args: ''
+          # ARM64 暂时不做，等有实际需求再开
+          # - platform: windows-latest
+          #   args: '--target aarch64-pc-windows-msvc'
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 安装 Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: 安装 Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: 安装 Tauri 构建依赖
+        run: |
+          choco install -y microsoft-visual-studio-build-tools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 Microsoft.VisualStudio.Component.Windows10SDK"
+
+      - name: 装前端依赖
+        run: npm ci
+
+      - name: 类型检查与单元测试
+        run: |
+          npm run typecheck
+          npm test
+
+      - name: 构建绿色版 exe
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'MemoDeck ${{ github.ref_name }}'
+          releaseBody: |
+            下载下面的 `MemoDeck.exe` 即可使用，无需安装。
+
+            **迁移到另一台电脑**：把 exe 拷过去，双击运行，登录账号后数据会自动恢复。
+
+            首次运行 Windows 可能提示"未知发布者" —— 点"更多信息 → 仍要运行"即可。
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}
