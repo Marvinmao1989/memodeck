@@ -2,7 +2,7 @@ use tauri::menu::{Menu, MenuItem, PredefinedMenuItem};
 use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
 use tauri::{AppHandle, Emitter, Manager, Runtime};
 
-use crate::window::{self, MAIN};
+use crate::window::{self, FLOATING, MAIN};
 
 /// 系统托盘常驻（PRD F2.12）
 ///
