@@ -7,7 +7,9 @@ src-tauri/target/
 .vite/
 
 # 本地数据目录（绿色版运行时生成）
-data/
+# 必须写成 /data/ 锚定到仓库根，否则会连带匹配源码目录 src/data/ ——
+# 那里面是数据库迁移、Repository 和搜索索引，漏掉的话别人 clone 下来直接编译失败
+/data/
 *.db
 *.db-journal
 *.db-wal
@@ -18,3 +20,6 @@ data/
 # 平台注入的目录，不属于项目源码
 .plugin-cache/
 .skills/
+
+# 打包临时目录（内含 .git，不应作为嵌套仓库进库）
+pkg/
