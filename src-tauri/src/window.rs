@@ -71,7 +71,7 @@ pub fn apply_mica(win: &WebviewWindow, dark: bool) {
     {
         use tauri::window::{EffectsBuilder, Effect};
 
-        let effect = if dark { Effect::MicaAlt } else { Effect::Mica };
+        let effect = if dark { Effect::MicaDark } else { Effect::Mica };
         let state = if dark {
             EffectState::Active
         } else {
