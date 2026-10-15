@@ -50,7 +50,7 @@ jobs:
 
       - name: 安装 Tauri 构建依赖
         run: |
-          choco install -y microsoft-visual-studio-build-tools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 Microsoft.VisualStudio.Component.Windows10SDK"
+          choco install -y visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 Microsoft.VisualStudio.Component.Windows10SDK"
 
       - name: 装前端依赖
         run: npm ci
