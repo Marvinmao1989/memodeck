@@ -61,7 +61,7 @@ jobs:
           npm test
 
       - name: 构建绿色版 exe
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -75,4 +75,6 @@ jobs:
             首次运行 Windows 可能提示"未知发布者" —— 点"更多信息 → 仍要运行"即可。
           releaseDraft: true
           prerelease: false
-          args: ${{ matrix.args }}
+          # 绿色版：不产出安装器，直接把裸 exe 作为 Release 附件上传（需配合 --no-bundle）
+          uploadPlainBinary: true
+          args: --no-bundle ${{ matrix.args }}
